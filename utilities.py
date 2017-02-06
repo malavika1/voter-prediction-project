@@ -3,35 +3,43 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-def import_train_data(train_file='train_2008.csv', ):
-    data = np.genfromtxt(train_file, delimiter=',', dtype=str)[1:]
-    data_x = data[:, list(range(1, 382))]
+def import_train_data(train_file='train_2008.csv', one_d_array=True):
+    data = np.genfromtxt(train_file, delimiter=',', dtype=float)[1:]
+    data_x = data[:, list(range(3, 382))]
     data_y = data[:, [382]]
-    data_y = [i[0] for i in data_y]
+
+    if one_d_array:
+        data_y = [i[0] for i in data_y]
 
     return data_x, data_y
 
 def import_test_data(test_file='test_2008.csv'):
-    data = np.genfromtxt(test_file, delimiter=',', dtype=str)[1:]
-    data_x = data[:, list(range(1, 382))]
+    data = np.genfromtxt(test_file, delimiter=',', dtype=float)[1:]
+    data_x = data[:, list(range(3, 382))]
 
     return data_x
 
 
-def normalize_data(train_data_x, train_data_y, test_data_x):
-    num_cols = len(train_data_x[0])
+def normalize_data(train_x, test_x):
+    """Function normalizes both the training x and testing x vectors
 
-    for n in num_cols:
-        test[:, n]
+    """
+    num_cols = len(train_x[0])
 
-    mean_x1 = np.mean(x1, axis=0)
-    std_x1 = np.std(x1, axis=0)
-    mean_x2 = np.mean(x2, axis=0)
-    std_x2 = np.std(x2, axis=0)
-    x1 = (x1 - mean_x1) / std_x1
-    xt1 = (xt - mean_x1) / std_x1
-    x2 = (x2 - mean_x2) / std_x2
-    xt2 = (xt - mean_x2) / std_x2
+    mean_train_x = np.mean(train_x, axis=0)
+    std_train_x = np.std(train_x, axis=0)
 
-# normalize minus mean divided by standard deviation
-#
+    train_x = (train_x - mean_train_x) / std_train_x
+    test_x = (test_x - mean_train_x) / std_train_x
+
+    return train_x, test_x
+
+def main(test_file='test_2008.csv'):
+    train_x, train_y = import_train_data()
+    test_x = import_test_data(test_file)
+
+    train_x, test_x = normalize_data(train_x, test_x)
+
+    return train_x, train_y, test_x
+
+main()
