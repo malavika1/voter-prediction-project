@@ -20,6 +20,8 @@ def import_test_data(test_file='test_2008.csv'):
     return data_x
 
 
+
+
 def normalize_data(train_x, test_x):
     """Function normalizes both the training x and testing x vectors
 
@@ -34,7 +36,7 @@ def normalize_data(train_x, test_x):
 
     return train_x, test_x
 
-def main(test_file='test_2008.csv'):
+def import_data(test_file='test_2008.csv'):
     train_x, train_y = import_train_data()
     test_x = import_test_data(test_file)
 
@@ -42,4 +44,5 @@ def main(test_file='test_2008.csv'):
 
     return train_x, train_y, test_x
 
-main()
+#def write_output_file(output):
+    
