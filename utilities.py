@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def import_train_data(train_file='train_2008.csv', one_d_array=True):
     data = np.genfromtxt(train_file, delimiter=',', dtype=float)[1:]
     data_x = data[:, list(range(3, 382))]
@@ -41,3 +42,7 @@ def import_data(train_file = 'train_2008.csv', test_file='test_2008.csv', one_d_
     return train_x, train_y, test_x
 
 def write_output_file(output):
+    output_id = np.array(list((range(0, len(output)))))
+    columns = ['id', 'PES1']
+    df = pd.DataFrame({'id': output_id, 'PES1': output}, columns=columns)
+    df.to_csv('output.csv', index=False)
