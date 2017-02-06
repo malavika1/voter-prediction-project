@@ -12,32 +12,59 @@ def get_avg_error(clf, points, y):
     return error / float(len(points))
     
 
-''' Experiments with different parameters for number of samples required to
-    be in the leaf on the decision tree.
+''' Experiments with different parameters to minimize error on the voter data
+
+    Tries two stops of early stopping at the range of ns specified.
+    Type 0 refers to min sample leaves = n and type 1 is max_depth = n
+
+    uses k fold cross verification
     Plots the results.
 
+    returns the best n and what the error was for that n
+
     '''
-def Min_Leaf_Trials(data, crit='gini'):
-    train_x, train_y = data
-    cutoff = 4 * len(train_x) / 5
-    val_x = train_x[:cutoff]
-    val_y = train_y[:cutoff]
-
-    train_x = train_x[cutoff:]
-    train_y = train_y[cutoff:]
-
+def Trials(data, ns, trial_type=0, crit='gini', k=5):
+    x, y = data
     val_errors = []
     train_errors = []
-    ns = range(1, 40, 4) # can be changed later
+    length = len(x) / k
+    bestn = None
+    best_err = np.inf
     for n in ns:
         print n
-        clf = tree.DecisionTreeClassifier(criterion=crit, min_samples_leaf=n)
-        clf = clf.fit(val_x, val_y)
-        val_errors.append(get_avg_error(clf, val_x, val_y))
-        train_errors.append(get_avg_error(clf, train_x, train_y))
-    print min(val_errors)
-    plt.figure(1)
-    title = "Error vs Min Leaf Samples Stopping Criteria " + " (impurity measure " + crit + ")"
+        k_val_errors = []
+        k_train_errors = []
+        for i in range(k):
+            bot = i * length
+            top = (i + 1) * length
+            
+            val_x = x[bot:top]
+            train_x = np.append(x[:bot], x[top:], axis=0)
+            val_y = y[bot:top]
+            train_y = np.append(y[:bot], y[top:], axis=0)
+
+            if trial_type == 0:
+                clf = tree.DecisionTreeClassifier(criterion=crit, min_samples_leaf=n)
+            else:  
+                clf = tree.DecisionTreeClassifier(criterion=crit, max_depth=n)
+            clf = clf.fit(train_x, train_y)
+            k_val_errors.append(get_avg_error(clf, val_x, val_y))
+            k_train_errors.append(get_avg_error(clf, train_x, train_y))
+
+        val_err = np.mean(k_val_errors)
+        if val_err < best_err:
+            bestn = n
+            best_err = val_err
+        val_errors.append(val_err)
+        train_errors.append(np.mean(k_train_errors))
+    print 100 * (1 - min(val_errors))
+    plt.figure(trial_type)
+    if type == 0:
+        title = "Error vs n for Min Leaf Samples Stopping Criterion " + \
+            " (impurity measure " + crit + ")"
+    else:
+        title = "Error vs n Max Depth Stopping Criterion " + \
+            " (impurity measure " + crit + ")"
     plt.title(title)
     plt.xlabel("n")
     plt.ylabel("Error")    
@@ -45,49 +72,30 @@ def Min_Leaf_Trials(data, crit='gini'):
     plt.plot(ns, val_errors, label = "Validation Error")
     plt.legend(loc="best")
     plt.show()
-
-''' Experiments with different parameters for minimum depth required for the 
-    decision tree.
-    Plots the results.
-
-    '''
-def Min_Depth_trials(data, crit='gini'):
-    train_x, train_y = data
-    cutoff = 4 * len(train_x) / 5
-    val_x = train_x[:cutoff]
-    val_y = train_y[:cutoff]
-
-    train_x = train_x[cutoff:]
-    train_y = train_y[cutoff:]
-    val_errors = []
-    train_errors = []
-    ns = range(3, 45, 3)
-    for n in ns:
-        print n
-        clf = tree.DecisionTreeClassifier(criterion=crit, max_depth=n)
-        clf = clf.fit(val_x, val_y)
-        val_errors.append(get_avg_error(clf, val_x, val_y))
-        train_errors.append(get_avg_error(clf, train_x, train_y))
-    print min(val_errors)
-    plt.figure(2)
-    title = "Error vs Tree Depth Stopping Criteria" + " (impurity measure " + crit + ")"
-    plt.title(title)
-    plt.xlabel("n")
-    plt.ylabel("Error")
-    plt.plot(ns, train_errors, label="Training Error")
-    plt.plot(ns, val_errors, label = "Validation Error")
-    plt.legend(loc="best")
-    plt.show()    
+    return bestn, best_err
    
+
+''' try some ranges of parameters with both models and then train a model with
+    whatever was best
+
+    '''
 if __name__ == '__main__':
-    data = ut.import_train_data()
+    train_x, train_y = ut.import_train_data()
+    test = ut.import_test_data()
+   
     print 'starting trial 1'
-    Min_Leaf_Trials(data)
+    a, a_err = Trials((train_x, train_y), range(40, 200, 9))
     print 'starting trial 2'
-    Min_Depth_trials(data)
-    '''
-    print 'starting trial 3'
-    Min_Leaf_Trials(data, 'entropy')
-    print 'starting trial 4'
-    Min_Depth_trials(data, 'entropy')
-    '''
+    b, b_err = Trials((train_x, train_y), range(1, 19, 2), 1)
+   
+
+    if b_err < a_err:
+        clf = tree.DecisionTreeClassifier(max_depth=b)
+        clf = clf.fit(train_x, train_y)
+        result = clf.predict(test)
+        ut.write_output_file(result)
+    else:
+        clf = tree.DecisionTreeClassifier(min_samples_leaf=a)
+        clf = clf.fit(train_x, train_y)
+        result = clf.predict(test)
+        ut.write_output_file(result)
