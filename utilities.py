@@ -44,5 +44,8 @@ def import_data(train_file = 'train_2008.csv', test_file='test_2008.csv', one_d_
 def write_output_file(output, file_name='output.csv'):
     output_id = np.array(list((range(0, len(output)))))
     columns = ['id', 'PES1']
-    df = pd.DataFrame({'id': output_id, 'PES1': output}, columns=columns)
+    df = pd.DataFrame({'id': output_id, 'PES1': output.astype(int)}, columns=columns)
     df.to_csv(file_name, index=False)
+
+input = np.array([0.0, 1.0])
+write_output_file(input)
