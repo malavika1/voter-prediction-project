@@ -32,8 +32,8 @@ def normalize_data(train_x, test_x):
 
     return train_x, test_x
 
-def import_data(train_file = 'train_2008.csv', test_file='test_2008.csv'):
-    train_x, train_y = import_train_data(train_file)
+def import_data(train_file = 'train_2008.csv', test_file='test_2008.csv', one_d_array=True):
+    train_x, train_y = import_train_data(train_file, one_d_array)
     test_x = import_test_data(test_file)
 
     train_x, test_x = normalize_data(train_x, test_x)
