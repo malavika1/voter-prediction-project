@@ -34,6 +34,9 @@ var/
 pip-log.txt
 pip-delete-this-directory.txt
 
+# Ignore csv files
+*.csv
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
