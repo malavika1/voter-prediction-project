@@ -45,9 +45,9 @@ def Trials(data, ns, trial_type=0, crit='gini', k=5):
             train_y = np.append(y[:bot], y[top:], axis=0)
 
             if trial_type == 0:
-                clf = DecisionTreeClassifier(criterion=crit, min_samples_leaf=n)
+                clf = AdaBoostClassifier(DecisionTreeClassifier(criterion=crit, min_samples_leaf=n))
             else:  
-                clf = DecisionTreeClassifier(criterion=crit, max_depth=n)
+                clf = AdaBoostClassifier(DecisionTreeClassifier(criterion=crit, max_depth=n))
             clf = clf.fit(train_x, train_y)
             k_val_errors.append(get_avg_error(clf, val_x, val_y))
             k_train_errors.append(get_avg_error(clf, train_x, train_y))
@@ -81,24 +81,13 @@ def Trials(data, ns, trial_type=0, crit='gini', k=5):
 
     '''
 if __name__ == '__main__':
-    train_x, train_y = ut.import_train_data()
-    test = ut.import_test_data()
+    train_x, train_y, test = ut.import_data()
    
-    print 'starting trial 1'
-    a, a_err = Trials((train_x, train_y), range(40, 300, 10))
-    print 'starting trial 2'
-    b, b_err = Trials((train_x, train_y), range(1, 19, 1), 1)
+    print 'starting trial'
+    b, b_err = Trials((train_x, train_y), range(1, 4, 1), 1)
    
-
-    if b_err < a_err:
-        clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=b))
-        clf = clf.fit(train_x, train_y)
-        result = clf.predict(test)
-        print clf.score(train_x, train_y)
-        ut.write_output_file(result)
-    else:
-        clf = AdaBoostClassifier(DecisionTreeClassifier(min_samples_leaf=a))
-        clf = clf.fit(train_x, train_y)
-        result = clf.predict(test)
-        print clf.score(train_x, train_y)
-        ut.write_output_file(result)
+    clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=b))
+    clf = clf.fit(train_x, train_y)
+    result = clf.predict(test)
+    print clf.score(train_x, train_y)
+    ut.write_output_file(result)
