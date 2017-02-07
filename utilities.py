@@ -31,13 +31,17 @@ def normalize_data(train_x, test_x):
     train_x = (train_x - mean_train_x) / std_train_x
     test_x = (test_x - mean_train_x) / std_train_x
 
+    train_x=np.ma.compress_cols(np.ma.masked_invalid(train_x))
+    test_x=np.ma.compress_cols(np.ma.masked_invalid(test_x))
+
+    print(train_x[0])
     return train_x, test_x
 
 def import_data(train_file = 'train_2008.csv', test_file='test_2008.csv', one_d_array=True):
     train_x, train_y = import_train_data(train_file, one_d_array)
     test_x = import_test_data(test_file)
 
-    #train_x, test_x = normalize_data(train_x, test_x)
+    train_x, test_x = normalize_data(train_x, test_x)
 
     return train_x, train_y, test_x
 
