@@ -1,3 +1,4 @@
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,7 +25,7 @@ def get_avg_error(clf, points, y):
     returns the best n and what the error was for that n
 
     '''
-def Trials(data, ns, trial_type=0, crit='gini', k=5):
+def Trials(data, ns, crit='gini', k=5):
     x, y = data
     val_errors = []
     train_errors = []
@@ -44,10 +45,7 @@ def Trials(data, ns, trial_type=0, crit='gini', k=5):
             val_y = y[bot:top]
             train_y = np.append(y[:bot], y[top:], axis=0)
 
-            if trial_type == 0:
-                clf = RandomForestClassifier(100, criterion=crit, min_samples_leaf=n)
-            else:  
-                clf = RandomForestClassifier(100, criterion=crit, max_depth=n)
+            clf = AdaBoostClassifier(RandomForestClassifier(100, criterion=crit, max_depth=n))
             clf = clf.fit(train_x, train_y)
             k_val_errors.append(get_avg_error(clf, val_x, val_y))
             k_train_errors.append(get_avg_error(clf, train_x, train_y))
@@ -60,12 +58,8 @@ def Trials(data, ns, trial_type=0, crit='gini', k=5):
         train_errors.append(np.mean(k_train_errors))
     print 100 * (1 - min(val_errors))
     plt.figure(trial_type)
-    if type == 0:
-        title = "Error vs n for Min Leaf Samples Stopping Criterion " + \
-            " (impurity measure " + crit + ")"
-    else:
-        title = "Error vs n Max Depth Stopping Criterion " + \
-            " (impurity measure " + crit + ")"
+
+    title = "Error vs n Max Depth Stopping Criterion using ata_boost random forest"
     plt.title(title)
     plt.xlabel("n")
     plt.ylabel("Error")    
@@ -82,22 +76,10 @@ def Trials(data, ns, trial_type=0, crit='gini', k=5):
     '''
 if __name__ == '__main__':
     train_x, train_y, test = ut.import_data()
-   
-    print 'starting trial 1'
-    a, a_err = Trials((train_x, train_y), range(1, 34, 1))
-    print 'starting trial 2'
-    b, b_err = Trials((train_x, train_y), range(5, 32, 1), 1)
-   
-
-    if b_err < a_err:
-        clf = RandomForestClassifier(max_depth=b)
-        clf = clf.fit(train_x, train_y)
-        result = clf.predict(test)
-        print b, b_err
-        ut.write_output_file(result, "100_forest.csv")
-    else:
-        clf = RandomForestClassifier(min_samples_leaf=a)
-        clf = clf.fit(train_x, train_y)
-        result = clf.predict(test)
-        print a, a_err
-        ut.write_output_file(result, "10_forest.csv")
+    n, err = Trials((train_x, train_y), range(1, 5, 1), 1)
+    clf = RandomForestClassifier(max_depth=b)
+    clf = clf.fit(train_x, train_y)
+    result = clf.predict(test)
+    print n, err
+    ut.write_output_file(result, "ata_boost_100_forest.csv")
+    
