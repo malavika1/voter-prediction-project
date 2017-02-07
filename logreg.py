@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # Get the normalized data
 X_train, y_train, X_test = ut.import_data()
 
-C_vals = np.arange(0.5, 5, 0.5)
+C_vals = np.arange(1.0, 10.0, 1.0)
 scores = []
 best_score = 0
 best_C = 0

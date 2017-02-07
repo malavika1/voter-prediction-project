@@ -84,9 +84,9 @@ if __name__ == '__main__':
     test = ut.import_test_data()
    
     print 'starting trial 1'
-    a, a_err = Trials((train_x, train_y), range(40, 200, 9))
+    a, a_err = Trials((train_x, train_y), range(40, 300, 10))
     print 'starting trial 2'
-    b, b_err = Trials((train_x, train_y), range(1, 19, 2), 1)
+    b, b_err = Trials((train_x, train_y), range(1, 19, 1), 1)
    
 
     if b_err < a_err:
