@@ -12,7 +12,7 @@ y_train -= 1
 # Create a model
 model = Sequential()
 for i in range(10):
-    model.add(Dense(50, input_shape=(X_train.shape[1],), activation='relu'))
+    model.add(Dense(50, input_shape=(X_train.shape[1],), init='uniform', activation='relu'))
     model.add(Dropout(0.4))
 
 # Predict the probabilities

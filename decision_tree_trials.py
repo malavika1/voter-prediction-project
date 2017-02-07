@@ -1,4 +1,5 @@
-from sklearn import tree
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import matplotlib.pyplot as plt
 import utilities as ut
@@ -44,9 +45,9 @@ def Trials(data, ns, trial_type=0, crit='gini', k=5):
             train_y = np.append(y[:bot], y[top:], axis=0)
 
             if trial_type == 0:
-                clf = tree.DecisionTreeClassifier(criterion=crit, min_samples_leaf=n)
+                clf = DecisionTreeClassifier(criterion=crit, min_samples_leaf=n)
             else:  
-                clf = tree.DecisionTreeClassifier(criterion=crit, max_depth=n)
+                clf = DecisionTreeClassifier(criterion=crit, max_depth=n)
             clf = clf.fit(train_x, train_y)
             k_val_errors.append(get_avg_error(clf, val_x, val_y))
             k_train_errors.append(get_avg_error(clf, train_x, train_y))
@@ -90,12 +91,14 @@ if __name__ == '__main__':
    
 
     if b_err < a_err:
-        clf = tree.DecisionTreeClassifier(max_depth=b)
+        clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=b))
         clf = clf.fit(train_x, train_y)
         result = clf.predict(test)
+        print clf.score(train_x, train_y)
         ut.write_output_file(result)
     else:
-        clf = tree.DecisionTreeClassifier(min_samples_leaf=a)
+        clf = AdaBoostClassifier(DecisionTreeClassifier(min_samples_leaf=a))
         clf = clf.fit(train_x, train_y)
         result = clf.predict(test)
+        print clf.score(train_x, train_y)
         ut.write_output_file(result)
