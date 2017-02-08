@@ -41,7 +41,7 @@ def Trials(data, ns, trial_type=0, crit='gini', k=5):
         clf = clf.fit(train_x, train_y)
 
         train_errors.append(clf.score(x, y))
-        val_err = np.mean(cross_val_score(clf, x, y_y, cv=5, scoring='accuracy'))
+        val_err = np.mean(cross_val_score(clf, x, y, cv=5, scoring='accuracy'))
         val_errors.append(val_err)
        
         if val_err < best_err:

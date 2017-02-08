@@ -1,4 +1,5 @@
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
 import numpy as np
 import matplotlib.pyplot as plt
 import utilities as ut
@@ -33,25 +34,18 @@ def Trials(data, ns, trial_type=0, crit='gini', k=5):
     best_err = np.inf
     for n in ns:
         print n
-        k_val_errors = []
-        k_train_errors = []
-        for i in range(k):
-            bot = i * length
-            top = (i + 1) * length
-            
-            val_x = x[bot:top]
-            train_x = np.append(x[:bot], x[top:], axis=0)
-            val_y = y[bot:top]
-            train_y = np.append(y[:bot], y[top:], axis=0)
+       
+        if trial_type == 0:
+            clf = RandomForestClassifier(100, criterion=crit, min_samples_leaf=n)
+        else:  
+            clf = RandomForestClassifier(100, criterion=crit, max_depth=n)
+        clf = clf.fit(x, y)
 
-            if trial_type == 0:
-                clf = RandomForestClassifier(100, criterion=crit, min_samples_leaf=n)
-            else:  
-                clf = RandomForestClassifier(100, criterion=crit, max_depth=n)
-            clf = clf.fit(train_x, train_y)
-            k_val_errors.append(get_avg_error(clf, val_x, val_y))
-            k_train_errors.append(get_avg_error(clf, train_x, train_y))
+        train_errors.append(clf.score(x, y))
 
+        val_err = np.mean(cross_val_score(clf, x, y, cv=5, scoring='accuracy'))
+        val_errors.append(val_err)
+    
         val_err = np.mean(k_val_errors)
         if val_err < best_err:
             bestn = n
