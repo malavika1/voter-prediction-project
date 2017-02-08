@@ -38,7 +38,7 @@ def Trials(data, ns, crit='gini', k=5):
 
         clf = AdaBoostClassifier(RandomForestClassifier(100, criterion=crit, max_depth=n))
         clf = clf.fit(x, y)
-        val_err = np.mean(cross_val_score(clf, X_train, y_train, cv=5, scoring='accuracy'))
+        val_err = np.mean(cross_val_score(clf, x, y, cv=5, scoring='accuracy'))
         train_err = clf.score(x, y)
 
         val_err = np.mean(k_val_errors)
