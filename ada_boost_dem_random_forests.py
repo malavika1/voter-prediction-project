@@ -1,5 +1,6 @@
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
 import numpy as np
 import matplotlib.pyplot as plt
 import utilities as ut
@@ -33,29 +34,19 @@ def Trials(data, ns, crit='gini', k=5):
     bestn = None
     best_err = np.inf
     for n in ns:
-        print n
-        k_val_errors = []
-        k_train_errors = []
-        for i in range(k):
-            bot = i * length
-            top = (i + 1) * length
-            
-            val_x = x[bot:top]
-            train_x = np.append(x[:bot], x[top:], axis=0)
-            val_y = y[bot:top]
-            train_y = np.append(y[:bot], y[top:], axis=0)
 
-            clf = AdaBoostClassifier(RandomForestClassifier(100, criterion=crit, max_depth=n))
-            clf = clf.fit(train_x, train_y)
-            k_val_errors.append(get_avg_error(clf, val_x, val_y))
-            k_train_errors.append(get_avg_error(clf, train_x, train_y))
+
+        clf = AdaBoostClassifier(RandomForestClassifier(100, criterion=crit, max_depth=n))
+        clf = clf.fit(x, y)
+        val_err = np.mean(cross_val_score(clf, X_train, y_train, cv=5, scoring='accuracy'))
+        train_err = clf.score(x, y)
 
         val_err = np.mean(k_val_errors)
         if val_err < best_err:
             bestn = n
             best_err = val_err
         val_errors.append(val_err)
-        train_errors.append(np.mean(k_train_errors))
+        train_errors.append(train_err)
     print 100 * (1 - min(val_errors))
     plt.figure(trial_type)
 

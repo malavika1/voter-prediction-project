@@ -1,5 +1,6 @@
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import cross_val_score
 import numpy as np
 import matplotlib.pyplot as plt
 import utilities as ut
@@ -33,31 +34,20 @@ def Trials(data, ns, trial_type=0, crit='gini', k=5):
     best_err = np.inf
     for n in ns:
         print n
-        k_val_errors = []
-        k_train_errors = []
-        for i in range(k):
-            bot = i * length
-            top = (i + 1) * length
-            
-            val_x = x[bot:top]
-            train_x = np.append(x[:bot], x[top:], axis=0)
-            val_y = y[bot:top]
-            train_y = np.append(y[:bot], y[top:], axis=0)
+        if trial_type == 0:
+            clf = DecisionTreeClassifier(criterion=crit, min_samples_leaf=n)
+        else:  
+            clf = DecisionTreeClassifier(criterion=crit, max_depth=n)
+        clf = clf.fit(train_x, train_y)
 
-            if trial_type == 0:
-                clf = DecisionTreeClassifier(criterion=crit, min_samples_leaf=n)
-            else:  
-                clf = DecisionTreeClassifier(criterion=crit, max_depth=n)
-            clf = clf.fit(train_x, train_y)
-            k_val_errors.append(get_avg_error(clf, val_x, val_y))
-            k_train_errors.append(get_avg_error(clf, train_x, train_y))
-
-        val_err = np.mean(k_val_errors)
+        train_errors.append(clf.score(x, y))
+        val_err = np.mean(cross_val_score(clf, x, y_y, cv=5, scoring='accuracy'))
+        val_errors.append(val_err)
+       
         if val_err < best_err:
             bestn = n
             best_err = val_err
-        val_errors.append(val_err)
-        train_errors.append(np.mean(k_train_errors))
+
     print 100 * (1 - min(val_errors))
     plt.figure(trial_type)
     if type == 0:
