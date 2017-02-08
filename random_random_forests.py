@@ -12,11 +12,11 @@ def random_search(X_train, y_train, X_test):
     model = RandomForestClassifier()
 
     rsearch = RandomizedSearchCV(estimator=model, param_distributions=param_grid, \
-     n_iter=100, cv=5)
+     n_iter=200, cv=5)
     rsearch.fit(X_train, y_train)
     print(rsearch)
     # summarize the results of the random parameter search
-    print('Random Search best score: ', 100 * (1 - rsearch.best_score))
+    print('Random Search best score: ', 100 * (1 - rsearch.best_score_))
     print('Random Search best depth: ', rsearch.best_estimator_.max_depth)
     print('Random Search best num_trees: ', rsearch.best_estimator_.n_estimators)
 
