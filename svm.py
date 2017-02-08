@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.svm import LinearSVC
 import utilities as ut
 import matplotlib.pyplot as plt
+from sklearn.model_selection import cross_val_score
 
 # Get the normalized data
 X_train, y_train, X_test = ut.import_data()
@@ -15,7 +16,7 @@ for C in C_vals:
     clf = LinearSVC(C=C)
     clf.fit(X_train, y_train)
 
-    score = clf.score(X_train, y_train)
+    score = np.mean(cross_val_score(clf, X_train, y_train, cv=5, scoring='accuracy'))
     scores.append(score)
     print C, score
 
