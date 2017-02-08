@@ -11,8 +11,7 @@ def random_search(X_train, y_train, X_test):
     param_grid = {'max_depth': [1, 2, 3, 4, 5], 'n_estimators': trees}
     model = RandomForestClassifier()
 
-    rsearch = RandomizedSearchCV(estimator=model, param_distributions=param_grid, \
-     n_iter=200, cv=5)
+    rsearch = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, scoring="accuracy")
     rsearch.fit(X_train, y_train)
     print(rsearch)
     # summarize the results of the random parameter search
