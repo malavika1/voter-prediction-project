@@ -84,7 +84,7 @@ if __name__ == '__main__':
     train_x, train_y, test = ut.import_data()
    
     print 'starting trial'
-    b, b_err = Trials((train_x, train_y), range(1, 4, 1), 1)
+    b, b_err = Trials((train_x, train_y), range(1, 5, 1), 1)
    
     clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=b))
     clf = clf.fit(train_x, train_y)
