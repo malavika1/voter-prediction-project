@@ -75,7 +75,7 @@ def Trials(data, ns, trial_type=0, crit='gini', k=5):
 
     '''
 if __name__ == '__main__':
-    train_x, train_y, test = ut.import_data()
+    train_x, train_y, test, _ = ut.import_data()
    
     print 'starting trial 1'
     a, a_err = Trials((train_x, train_y), range(1, 34, 1))

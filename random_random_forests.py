@@ -26,7 +26,7 @@ def random_search(X_train, y_train, X_test):
     ut.write_output_file(rsearch.predict(X_test), file_name='random_random_foreset_search.csv')
 
 def main():
-    X_train, y_train, X_test = ut.import_data()
+    X_train, y_train, X_test, X_test_2 = ut.import_data()
     print 'got data\n'
     random_search(X_train, y_train, X_test)
     

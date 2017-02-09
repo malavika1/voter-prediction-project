@@ -20,7 +20,7 @@ def import_test_data(test_file='test_2008.csv'):
 
     return data_x
 
-def normalize_data(train_x, test_x):
+def normalize_data(train_x, test_x, test_x_2):
     """Function normalizes both the training x and testing x vectors
     """
     num_cols = len(train_x[0])
@@ -30,19 +30,22 @@ def normalize_data(train_x, test_x):
 
     train_x = (train_x - mean_train_x) / std_train_x
     test_x = (test_x - mean_train_x) / std_train_x
+    test_x_2 = (test_x_2 - mean_train_x) / std_train_x
 
     train_x=np.ma.compress_cols(np.ma.masked_invalid(train_x))
     test_x=np.ma.compress_cols(np.ma.masked_invalid(test_x))
+    test_x_2=np.ma.compress_cols(np.ma.masked_invalid(test_x_2))
 
-    return train_x, test_x
+    return train_x, test_x, test_x_2
 
-def import_data(train_file = 'train_2008.csv', test_file='test_2008.csv', one_d_array=True):
+def import_data(train_file = 'train_2008.csv', one_d_array=True):
     train_x, train_y = import_train_data(train_file, one_d_array)
-    test_x = import_test_data(test_file)
+    test_x = import_test_data('test_2008.csv')
+    test_x_2 = import_test_data('test_2012.csv')
 
-    train_x, test_x = normalize_data(train_x, test_x)
+    train_x, test_x, test_x_2 = normalize_data(train_x, test_x, test_x_2)
 
-    return train_x, train_y, test_x
+    return train_x, train_y, test_x, test_x_2
 
 def write_output_file(output, file_name='output.csv'):
     output_id = np.array(list((range(0, len(output)))))
