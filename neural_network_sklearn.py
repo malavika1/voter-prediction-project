@@ -7,11 +7,21 @@ import numpy as np
 
 def run_one(X_train, y_train, X_test):
     #hidden_layer_sizes=(4) => 0.773686
-    #hidden_layer_sizes=(), adamsolver => 0.774135
-    # hidden_layer_sizes=(4), adamsolver => 0.7735
+    #hidden_layer_sizes=(5), adamsolver => 0.77314
+    # hidden_layer_sizes=(4), adamsolver => 0.7739
     # hidden_layer_sizes=(3), adamsolver => 0.7724
     # hidden_layer_sizes=(6), adamsolver => 0.7717
-    mlp = MLPClassifier(hidden_layer_sizes=(), solver='adam',learning_rate_init=0.01,max_iter=500)
+    # hidden_layer_sizes=(3, 2), adamsolver => 0.77347
+    # hidden_layer_sizes=(3, 2), adamsolver => 0.77265
+    # hidden_layer_sizes=(2, 2), adamsolver =>0.765
+    # hidden_layer_sizes=(5, 2), adamsolver =>0.7745
+    # hidden_layer_sizes=(6, 2), adamsolver =>0.7735
+    # hidden_layer_sizes=(4, 2), adamsolver =>0.7728
+    # hidden_layer_sizes=(5, 3), adamsolver =>0.77401153
+    # hidden_layer_sizes=(6, 3), adamsolver =>0.77401153
+    # hidden_layer_sizes=(7, 3), adamsolver =>0.77288
+    # hidden_layer_sizes=(4, 3), adamsolver =>0.7726
+    mlp = MLPClassifier(hidden_layer_sizes=(4), solver='sgd',learning_rate_init=0.005,max_iter=500)
 
     mlp.fit(X_train, y_train)
 
@@ -23,17 +33,11 @@ def run_one(X_train, y_train, X_test):
 
 def grid_search(X_train, y_train, X_test):
     parameters = {
-     'hidden_layer_sizes': [(3), (4), (5), (6), (10, 2), (5, 2), (4,2), (3,2)],
-     'activation': ['relu'],
-     'learning_rate_init': [1, 0.1, 0.01, 0.001, 1e-05],
-     'max_iter': [500],
-     'alpha': [0.1, 0.01, 10],
-     'solver': ['adam', 'sgd'],
-     'tol': [0.01],
-     'learning_rate': ['invscaling', 'constant']
+     'hidden_layer_sizes': [(3), (4), (5), (6), (5, 2), (4,2), (3,2), (6, 3), (5, 3), (4, 3)],
+     'solver': ['adam', 'sgd']
      }
-    model = MLPClassifier(verbose=True)
-    classifier = GridSearchCV(estimator=model, param_grid=parameters)
+    model = MLPClassifier(verbose=True, learning_rate_init=0.01,max_iter=500, solver='adam')
+    classifier = GridSearchCV(estimator=model,  param_grid=parameters)
     classifier.fit(X_train, y_train)
     print(classifier.best_estimator_)
     print("Best parameters found:")
@@ -52,7 +56,7 @@ def main():
     X_train, y_train, X_test = ut.import_data()
 
     run_one(X_train, y_train, X_test)
-    #grid_search(X_train, y_train, X_test)
+    grid_search(X_train, y_train, X_test)
 
 
 if __name__ == '__main__':
